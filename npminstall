@@ -1,0 +1,12 @@
+  784  npm install
+  871  npm install
+  879  npm install vue-router@4 --save
+  908  npm install -g @vue/cli
+  957  npm install
+ 1020  npm install
+ 1021  npm install -D unplugin-vue-components unplugin-auto-import
+ 1022  npm install --save vuex-persistedstate
+ 1023  npm install jwt-decode
+ 1024  npm install --save axios vue-axios
+ 1025  npm install vuex
+ 1026  history| grep "npm install" > npminstall
