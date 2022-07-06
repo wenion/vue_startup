@@ -1,262 +1,117 @@
 <template>
-  <div class="rating">
-    <h2>admin</h2>
+  <div v-if="awesome">
+    <v-window
+      v-model="window"
+      show-arrows
+    >
+      <v-window-item
+        v-for="n in feedbacks"
+        :key="n.id"
+      >
+      <v-card
+        class="mx-auto"
+        max-width="800"
+        style= "margin-top: 5%;"
+      >
+        <v-card-title class="text-h6 font-weight-regular justify-space-between">
+        <span>Hi, {{user.username}}</span>
+        </v-card-title>
+        <v-divider></v-divider>
 
-    <div v-if="awesome">
-      <!-- <label for="story">Feedback {{router_id}}</label> -->
-      <!-- <label for="story">Feedback {{$route.params.id}}</label> -->
-      <textarea id="story" name="story" rows="8" cols="80" disabled>{{feedbackItem.feedback_content}}</textarea>
-      <!-- <textarea id="story" name="story" disabled>{{feedbackItem.feedback_content}}</textarea> -->
-      <!-- <input type="button" value="reset" @click="resetFeedbackContent"> -->
-      <form v-for="question in questions" :key="question.id">
-        <fieldset class="rating" id="ratingSystem">
-          <legend>Q{{question.id+1}} {{question.content}}</legend>
-          <div>
-            <label for="rating">0 to 10</label>
-            <!-- <input type="button" @click="selectRating(question)"> -->
+        <v-card-title class="text-h6 font-weight-regular justify-space-between">
+          <!-- <h3>Title {{n.id}}</h3> -->
+          <p>[{{n.id}}/{{feedbacks.length}}] {{n.assign_name}}</p>
+          
+          <!-- <h3>Title {{$route.params.id}}</h3> -->
+        </v-card-title>
 
-            <!-- <form v-for="star in stars" :key="star"> -->
-            <!-- <input v-for="star in stars" :key="star" type="radio" id="star" name="monster" value="star"> -->
-            <!-- <label for="kraken">Kraken</label><br/> -->
-            <input type="radio" id="star0" name="rating" value="0" v-model="question.value"/>
-            <input type="radio" id="star1" name="rating" value="1" v-model="question.value"/>
-            <input type="radio" id="star2" name="rating" value="2" v-model="question.value"/>
-            <input type="radio" id="star3" name="rating" value="3" v-model="question.value"/>
-            <input type="radio" id="star4" name="rating" value="4" v-model="question.value"/>
-            <input type="radio" id="star5" name="rating" value="5" v-model="question.value"/>
-            <input type="radio" id="star6" name="rating" value="6" v-model="question.value"/>
-            <input type="radio" id="star7" name="rating" value="7" v-model="question.value"/>
-            <input type="radio" id="star8" name="rating" value="8" v-model="question.value"/>
-            <input type="radio" id="star9" name="rating" value="9" v-model="question.value"/>
-            <input type="radio" id="star10" name="rating" value="10" v-model="question.value"/>
-            <!-- <input type="radio" id="star0" name="rating" value="0" @click="selectRating(value)"/>
-            <input type="radio" id="star2" name="rating" value="2" @click="selectRating"/>
-            <input type="radio" id="star3" name="rating" value="3" @click="selectRating"/>
-            <input type="radio" id="star4" name="rating" value="4" @click="selectRating"/>
-            <input type="radio" id="star5" name="rating" value="5" @click="selectRating"/>
-            <input type="radio" id="star6" name="rating" value="6" @click="selectRating"/>
-            <input type="radio" id="star7" name="rating" value="7" @click="selectRating"/>
-            <input type="radio" id="star8" name="rating" value="8" @click="selectRating"/>
-            <input type="radio" id="star9" name="rating" value="9" @click="selectRating"/>
-            <input type="radio" id="star10" name="rating" value="10" @click="selectRating"/> -->
+        <v-textarea
+          name="content"
+          auto-grow
+          rows="10"
+          :value="n.commenttext"
+          style="margin-left: 5%; margin-right: 5%"
+        ></v-textarea>
 
-            <div>Rating: {{ question.value }}</div>
-          </div>
-          <!-- <output name="result" form="" for="a b">60</output> -->
-          <!-- <input type="text" value="10" disabled> -->
-        </fieldset>
-      </form>
+        <v-list>
+          <v-list-item
+            v-for="question in questions"
+            :key="question.id"
+          >
+            <v-col
+              cols="12"
+              md="10"
+              style="margin: auto;"
+            >
+              <v-list-item-header>
+                <!-- <v-list-item-title v-text="question.content"></v-list-item-title> -->
+                <p>{{question.content}}</p><br/>
+                <p v-if="n.score[question.id-1]">Your selection is <b>{{n.score[question.id-1]}}</b></p>
+                <p v-else>You haven't rate</p>
+                <!-- <v-list-item-subtitle>
+                  x
+                </v-list-item-subtitle> -->
+              </v-list-item-header>
+                
+              <div class="d-flex flex-column align-center justify-center">
+                <v-rating
+                  v-model="n.score[question.id-1]"
+                  class="ma-2"
+                  empty-icon="mdi-circle-outline"
+                  full-icon="mdi-circle"
+                  length = 5
+                  :item-labels="['1', '2', '3', '4', '5']"
+                  item-label-position="bottom"
+                ></v-rating>
+              </div>
+            </v-col>
+          </v-list-item>
+        </v-list>
 
-      <input v-if="!lastQuestion" type="button" value="Next" @click="next">
-      <input v-else type="button" value="Submit" @click="submit">
-    </div>
-    <div v-else>
-      <h2>Loding...</h2>
-    </div>
-    
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            @click="submit"
+            size="large"
+          >
+            {{buttonText}}
+          </v-btn>
+          
+        </v-card-actions>
+      </v-card>
+    </v-window-item>
+  </v-window>
+  </div>
+  <div v-else>
+    <h2>Loding...</h2>
   </div>
 </template>
 
-<!-- <script setup> -->
 <script setup>
 import { ref, computed, onMounted, watch, watchEffect } from 'vue'
 
 const todoId = ref(1)
 
+const step = ref(3)
+
+const window = ref(0)
+
+// const id = $route.params.id;
+
 const awesome = ref(false)
 
-const p = ref(null)
-const feedbackItem = ref(null)
+// const buttonText = ref('Next')
+
+const feedbacks = ref(null)
 const questions = ref(null)
-const stars = ref([0,1,2,3,4,5,6,7,8,9,10])
 
 const lastQuestion = ref(false)
 
 import { useStore } from 'vuex'
 const store = useStore()
 
-function setToken(token) {
-  store.dispatch('setToken', token)
-}
-
-const token = computed(() => {
-  return store.getters.getToken
-})
-
-function resetFeedbackContent()
-{
-
-}
-
-console.log("token", token.value)
-
-
-
-import axios from 'axios'
-axios.defaults.baseURL = 'http://34.125.129.147:5000'
-
-onMounted(() => {
-  axios.get('/get_feedback/0', {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'x-access-token' : token.value
-    }
-  //}).then(({data})=> console.log(data)
-  }).then(function({data}) {
-
-    // console.log(data)
-    // console.log("token", token.value)
-    p.value = data
-    feedbackItem.value = p.value[router.currentRoute._value.params.id]
-    questions.value = feedbackItem.value.questions
-    // console.log("feedback", feedbackItem)
-    awesome.value = true
-    // setToken(data.token)
-    // router.push('/rating/0', data)
-  }).catch(function (error) {
-    router.push('/login')
-    console.log("error", error);
-  });
-})
-
-function getFeedback()
-{
-  axios.get('/get_feedback/0', {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'x-access-token' : token.value
-    }
-  //}).then(({data})=> console.log(data)
-  }).then(function({data}) {
-
-    // console.log(data)
-    // console.log("token", token.value)
-    p.value = data
-    feedbackItem.value = p.value[router.currentRoute._value.params.id]
-    questions.value = feedbackItem.value.questions
-    // console.log("feedback", feedbackItem)
-    awesome.value = true
-    // setToken(data.token)
-    // router.push('/rating/0', data)
-  }).catch(function (error) {
-    console.log("error", error);
-  });
-}
-
-// getFeedback()
-
-function selectRating(value)
-{
-  console.log(value);
-}
-
-function submit_feedback(feedbackItem, isfinished)
-{
-  console.log("token", token)
-  const form = new FormData();
-  // console.log("fp", feedbackItem.user_id)
-  form.append("user_id", feedbackItem.user_id);
-  form.append("feedback_id", feedbackItem.feedback_id);
-  form.append("isfinished", isfinished);
-
-  console.log("questions", feedbackItem.questions.length)
-
-  for (let i = 0; i < feedbackItem.questions.length; i++)
-  {
-    form.append("question_" + i, feedbackItem.questions[i].value);
-    console.log("question" + i, feedbackItem.questions[i].value)
-  }
-
-  console.log("form", form)
-
-  axios.post('/submit', form, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'x-access-token' : token.value
-    }
-  }).then(function({data}) {
-    console.log("data", data)
-    
-
-    // router.push('/')
-  }).catch(function (error) {
-    // console.log(error.toJSON());
-    console.log("errorjson", error.toJSON());
-  });
-}
-
-function next()
-{
-  // console.log("lastQuestion", lastQuestion.value, router.currentRoute._value.params.id, p.value.length)
-  // console.log()
-  if (router.currentRoute._value.params.id == p.value.length - 2)
-  {
-    // console.log("lastQuestion 2", lastQuestion.value)
-    lastQuestion.value = !lastQuestion.value
-    // console.log("lastQuestion after", lastQuestion.value)
-  }
-
-  if (router.currentRoute._value.params.id < p.value.length - 1)
-  {
-    // console.log("current", router.currentRoute._value.params.id)
-    let finsh = 1
-    for (let i = 0; i < questions.value.length; i++)
-    {
-      // console.log(questions.value[i].value)
-      if (questions.value[i].value === undefined)
-      {
-        // console.log("null")
-        // alert(`Hello`)
-        alert(`Question ${i} has no score`)
-        finsh = 0
-        break
-      }
-      // console.log("rating", questions.value)
-    }
-
-    if (finsh)
-    {
-      submit_feedback(p.value[router.currentRoute._value.params.id], 'False')
-
-      router.push(`/rating/${++router.currentRoute._value.params.id}`)
-      feedbackItem.value = p.value[router.currentRoute._value.params.id]
-      questions.value = feedbackItem.value.questions
-      // console.log("feedback", feedbackItem)
-    }
-
-  }
-  else
-  {
-    console.log("p", p.value) 
-  }
-}
-
-
-function submit()
-{
-  console.log("p", p.value)
-
-  submit_feedback(p.value[router.currentRoute._value.params.id], 'True')
-  router.push('/user')
-  // lastQuestion.value = true
-
-  // const form = new FormData();
-  // form.append("username", p.value);
-
-
-  // axios.post('/submit', form, {
-  //   headers: {
-  //     'Content-Type': 'multipart/form-data',
-  //     'x-access-token' : token.value
-  //   }
-  // }).then(function({data}) {
-
-  //   router.push('/')
-  // }).catch(function (error) {
-  //   // console.log(error.toJSON());
-  //   console.log("errorjson", error.toJSON());
-  // });
-}
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
@@ -271,57 +126,145 @@ const router_id = computed(() => {
   return router.currentRoute._value.params.id
 })
 
+const token = computed(() => {
+  return store.getters.getToken
+})
+
+const user = computed(() => {
+  return store.getters.getUser
+})
+
+const buttonText = computed(() => {
+  if (window.value == feedbacks.value.length - 1)
+  {
+    return "Sumbit"
+  }
+  else
+  {
+    return "Next"
+  }
+})
+
+// const p = computed(() => {
+//   return store.getters.getP
+// })
+
+
+
+import axios from 'axios'
+axios.defaults.baseURL = 'http://34.125.129.147:5000'
+
+onMounted(() => {
+
+  console.log("asios")
+  axios.get('/get_feedback/0', {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'x-access-token' : token.value
+    }
+  //}).then(({data})=> console.log(data)
+  }).then(function({data}) {
+    feedbacks.value = data.feedback
+
+    // console.log("feedbacks>>",feedbacks.value.length)
+    // let i = 0
+    // for (; i< feedbacks.value.length; i++)
+    // {
+    //   feedbacks[i].push()
+    // }
+    questions.value = data.question
+    console.log("feedbacks", feedbacks.value, questions.value);
+    awesome.value = true
+  }).catch(function (error) {
+    router.push('/login')
+    console.log("error", error);
+  });
+
+
+})
+
+
+
+
+
+
+function submit_feedback()
+{
+  // console.log("token", token)
+  // const form = new FormData();
+  // form.append("user_id", feedbacks);
+  // form.append("feedback_id", feedbackItem.feedback_id);
+
+  // for (let i = 0; i < feedbackItem.questions.length; i++)
+  // {
+  //   form.append("question_" + i, feedbackItem.questions[i].rating);
+  //   console.log("question" + i, feedbackItem.questions[i].rating)
+  // }
+
+  const json = JSON.stringify(feedbacks.value);
+  console.log("form", json)
+
+  axios.post('/submit', json, {
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'x-access-token' : token.value
+    }
+  }).then(function({data}) {
+    console.log("data", data)
+    
+
+    // router.push('/')
+  }).catch(function (error) {
+    // console.log(error.toJSON());
+    console.log("errorjson", error.toJSON());
+  });
+}
+
+
+function submit()
+{
+  let page = (window.value+1) % feedbacks.value.length
+  if (page != 0)
+  {
+    // next
+    window.value = page
+    return
+  }
+  else
+  {
+    // submit
+    for (let i = 0; i < feedbacks.value.length; i++)
+    {
+      for (let j = 0; j < feedbacks.value[i].score.length; j++)
+      {
+        // console.log(">>>>", s, feedbacks.value[i].score[s])
+        if (feedbacks.value[i].score[j] === 0)
+        {
+          alert(`Text ${i+1}/${feedbacks.value.length} Question ${j + 1} has no score`)
+          return
+        }
+      }
+    }
+
+    console.log("submiting", feedbacks.value)
+    submit_feedback()
+    router.push('/thank')
+  }
+}
+
+
+// const currentTitle = computed(() => {
+//   switch (step.value) {
+//           case 1: return 'Sign-up'
+//           case 2: return 'Create a password'
+//           default: return 'Account created'
+//         }
+// })
+
 
 
 </script>
 
 <style>
 
-/* .rating {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-} */
-
-
-textarea {
-    font-size: .8rem;
-    letter-spacing: 1px;
-}
-textarea {
-    padding: 10px;
-    max-width: 100%;
-    line-height: 1.5;
-    border-radius: 5px;
-    border: 10px solid #ccc;
-    box-shadow: 1px 1px 1px #999;
-}
-
-form {
-  padding: 30px;
-  max-width: 100%;
-  line-height: 1.5;
-  border-radius: 10px;
-  /* border: 10px solid #ccc; */
-  /* box-shadow: 1px 1px 1px #999; */
-}
-
-/* label {
-    display: block;
-    margin-bottom: 10px;
-} */
-
-/* legend {
-    background-color: #000;
-    color: #fff;
-    padding: 3px 6px;
-} */
-
-/* .output {
-    font: 1rem 'Fira Sans', sans-serif;
-} */
-
-input {
-    margin: .4rem;
-}
 </style>

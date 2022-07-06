@@ -1,18 +1,44 @@
 <template>
-  <div class="login">
-    <h2>Sign In</h2>
-    <!-- <form action="" method="get" class="form-group"> -->
-    <form @submit.prevent="login" class="form-group">
-        <!-- <input type="text" name="username" id="username" placeholder="User name" value="user.value.username" required> -->
-        <input type="text" name="username" id="username" placeholder="User ID" v-model="username" required>
-        <input type="password" name="password" id="password" placeholder="Password" v-model="password" required>
-        <!-- <input type="submit" value="Login" @click="getList"> -->
-        <input type="submit" id="loginBtn" value="Login">
-        
-        <!-- <p>Counter: {{ trackCounter }}</p> -->
-        <!-- <button @click="setToken">Increment</button> -->
-    </form>
-  </div>
+  <v-card
+      class="mx-auto"
+      max-width="500px"
+      style= "margin-top: 20%;"
+    >
+    <v-card-title class="text-h6 font-weight-regular justify-space-between">
+      <span>Sign in</span>
+    </v-card-title>
+    <v-card-text>
+      <v-form
+        ref="form"
+        class="pa-4 pt-6"
+      >
+        <v-text-field
+          label="Username"
+          filled
+          color="blue"
+          v-model="username"
+        ></v-text-field>
+        <v-text-field
+          label="Password"
+          type="password"
+          filled
+          color="blue"
+          v-model="password"
+          style="min-height: 96px"
+        ></v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-divider></v-divider>
+    <v-card-actions>
+    <v-spacer></v-spacer>
+    <v-btn
+      variant="contained-flat"
+      @click="login"
+    >
+      Login
+    </v-btn>
+  </v-card-actions>
+</v-card>
 </template>
 
 
@@ -26,6 +52,11 @@ const store = useStore()
 function setToken(token) {
   store.dispatch('setToken', token)
 }
+
+function setUser(data) {
+  store.dispatch('setUser', data)
+}
+
 
 const trackCounter = computed(() => {
   return store.getters.getToken
@@ -45,6 +76,8 @@ const route = useRoute()
 // const user = ref([{'username': '', 'password': ''}])
 const username = ref('')
 const password = ref('')
+
+// const form = ref(false)
 
 // import { useStore } from 'vuex'
 // const store = useStore()
@@ -78,19 +111,26 @@ function login() {
   form.append("username", username.value);
   form.append("password", password.value);
   // console.log(form)
+  // axios.post('http://34.125.129.147:5000/login', form, {
   axios.post('http://34.125.129.147:5000/login', form, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   //}).then(({data})=> console.log(data)
   }).then(function({data}) {
-    console.log("token", data.token)
+    console.log("login", data)
     setToken(data.token)
+    setUser(data)
     router.push('/user')
   }).catch(function (error) {
     // console.log(error.toJSON());
-    console.log('error', error.toJSON());
-    alert(`Error Username or Password`)
+    if (error.message == "Network Error")
+      alert(`Webserver Network Error`)
+    else
+    {
+      console.log('error', error.toJSON());
+      alert(`Error Username or Password`)
+    }
   });
 }
 
@@ -115,7 +155,7 @@ function greet(event) {
 } */
 
 /* input[type=text], input[type=password] { */
-#username, input[type=password] {
+/* #username, input[type=password] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -123,10 +163,10 @@ function greet(event) {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-}
+} */
 
 /* input[type=submit] { */
-#loginBtn {
+/* #loginBtn {
   width: 100%;
   background-color: #4CAF50;
   color: white;
@@ -135,11 +175,11 @@ function greet(event) {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
+} */
 
-.login {
+/* .login {
   border-radius: 5px;
   background-color: #f2f2f2;
   padding: 20px;
-}
+} */
 </style>

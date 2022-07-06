@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import UserView from '../views/UserView.vue'
 // import RatingView from '../views/RatingView.vue'
 import Fof from '../views/Fof.vue'
+// import ThankView from '../views/ThankView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: LoginView
     },
     {
       path: '/about',
@@ -32,13 +33,19 @@ const router = createRouter({
       component: UserView
     },
     {
-      path: '/rating/:id',
+      // path: '/rating/:id',
+      path: '/rating/',
       component: () => import('../views/RatingView.vue')
     },
     {
       path: '/404',
       name: 'fof',
       component: Fof
+    },
+    {
+      path: '/thank',
+      name: 'thank',
+      component: () => import('../views/ThankView.vue')
     }
   ]
 })

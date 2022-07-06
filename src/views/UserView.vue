@@ -1,17 +1,64 @@
 <template>
-  <div class="user">
-    <h2>admin</h2>
-    <div class="playable-buttons">
-      <input id="reset" type="button" value="Update feedback data">
-      <input id="download" type="button" value="Download feedback data" @click="downloadData">
-      <input id="solution" type="button" value="Start rating" @click="startRanking">
-      <input id="logout" type="button" value="Logout" @click="logout">
-    </div>
-  </div>
+  <v-card
+    class="mx-auto"
+    max-width="500px"
+    style= "margin-top: 20%;"
+    >
+    <v-card-title class="text-h6 font-weight-regular justify-space-between">
+      <span>Hi, {{user.username}}</span>
+    </v-card-title>
+    <v-divider></v-divider>
+
+    <v-list v-for="n in items"
+        :key="n.id" class="d-flex flex-column align-center justify-center" >
+    <v-btn
+        variant="contained-flat"
+        :color="n.color"
+        @click="n.clickAction"        
+        width = "300px"
+        v-if="authShow(n.needAuth)"
+      >
+      {{n.name}}
+    </v-btn>
+    </v-list>
+
+  </v-card>
+
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+
+const items = ref([
+        {
+          name: 'Upload feedback data',
+          id: 1,
+          clickAction : downloadData,
+          color : "grey",
+          needAuth : true,
+        },
+        {
+          name: 'Download feedback data',
+          id: 2,
+          clickAction : downloadData,
+          color : "grey",
+          needAuth : true,
+        },
+        {
+          name: 'Start rating',
+          id: 3,
+          clickAction : startRanking,
+          color : "success",
+          needAuth : false,
+        },
+        {
+          name: 'Logout',
+          id: 3,
+          clickAction : logout,
+          color : "error",
+          needAuth : false,
+        },
+      ])
 
 import { useStore } from 'vuex'
 const store = useStore()
@@ -20,9 +67,34 @@ function setToken(token) {
   store.dispatch('setToken', token)
 }
 
+// function setCurrentPage(page) {
+//   store.dispatch('setCurrentPage', page)
+// }
+
+// const currentPage = computed(() => {
+//   return store.getters.getCurrentPage
+// })
+
 const token = computed(() => {
   return store.getters.getToken
 })
+
+const user = computed(() => {
+  return store.getters.getUser
+})
+
+// const authShow = computed((s) => {
+//   console.log("auth", store.getters.getUser.auth, s)
+//   return store.getters.getUser.auth == 0 ? true : false
+// })
+
+function authShow(s) {
+  console.log("auth", store.getters.getUser.auth, s)
+  if (s == false)
+    return true
+  else
+    return store.getters.getUser.auth == 1 ? true : false
+}
 
 function setFeedback(feedback) {
   store.dispatch('setToken', feedback)
@@ -73,7 +145,8 @@ axios.defaults.baseURL = 'http://34.125.129.147:5000'
 //     });
 
 onMounted(() => {
-  console.log("on mout", token.value)
+  // console.log("on mount", token.value)
+  console.log("on mount", user.value)
   if (token.value =='')
   {
     router.push('/login')
@@ -85,8 +158,9 @@ const router = useRouter()
 
 function startRanking()
 {
-  console.log(token)
-  router.push('/rating/0')
+  // console.log(token)
+  // setCurrentPage(0)
+  router.push(`/rating`)
   // axios.get('/get_feedback/0', {
   // axios.get('/get_feedback/0', {
   //   headers: {
@@ -168,7 +242,7 @@ function getUser()
 </script>
 
 <style>
-.user {
+/* .user {
   border-radius: 5px;
   background-color: #f2f2f2;
   padding: 20px;
@@ -205,5 +279,5 @@ function getUser()
   border: none;
   border-radius: 4px;
   cursor: pointer;
- }
+ } */
 </style>
