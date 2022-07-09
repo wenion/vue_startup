@@ -1,71 +1,30 @@
 <template>
 <div class="text-center">
-<main class="form-signin w-100 m-auto">
-  <form>
-    <!-- <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
-    <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+  <main class="form-signin w-100 m-auto bg-white">
+    <form>
+      <!-- <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+      <h1 class="h3 mb-3 fw-normal">Welcome</h1>
 
-    <div class="form-floating">
-      <input type="email" class="form-control" id="floatingInput" placeholder="Username" v-model="username">
-      <label for="floatingInput">Username</label>
-    </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
-      <label for="floatingPassword">Password</label>
-    </div>
-    </form>
+      <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="Username" v-model="username">
+        <label for="floatingInput">Username</label>
+      </div>
+      <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
+        <label for="floatingPassword">Password</label>
+      </div>
+      </form>
 
-    <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
-      <!-- https://codepen.io/AllThingsSmitty/pen/pOoeyz -->
-    </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit" @click="login">Sign in</button>
-    <!-- <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p> -->
-  
-</main>
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary" type="submit" @click="login">Sign in</button>
+      <!-- <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p> -->
+    
+  </main>
 </div>
-  <!-- <v-card
-      class="mx-auto"
-      max-width="500px"
-      style= "margin-top: 15%;"
-    >
-    <v-card-title class="text-h6 font-weight-regular justify-space-between">
-      <span>Sign in</span>
-    </v-card-title>
-    <v-card-text>
-      <v-form
-        ref="form"
-        class="pa-4 pt-6"
-      >
-        <v-text-field
-          label="Username"
-          filled
-          color="blue"
-          v-model="username"
-        ></v-text-field>
-        <v-text-field
-          label="Password"
-          type="password"
-          filled
-          color="blue"
-          v-model="password"
-          style="min-height: 96px"
-        ></v-text-field>
-      </v-form>
-    </v-card-text>
-    <v-divider></v-divider>
-    <v-card-actions>
-    <v-spacer></v-spacer>
-    <v-btn
-      variant="contained-flat"
-      @click="login"
-    >
-      Login
-    </v-btn>
-  </v-card-actions>
-</v-card> -->
 </template>
 
 
