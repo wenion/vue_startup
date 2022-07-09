@@ -6,9 +6,9 @@ import Vuex from 'vuex'
 import { createStore } from 'vuex'
 import router from './router'
 // import store from './store'
-import vuetify from './plugins/vuetify'
+// import vuetify from './plugins/vuetify'
 import createPersistedState from 'vuex-persistedstate'
-import { loadFonts } from './plugins/webfontloader'
+// import { loadFonts } from './plugins/webfontloader'
 
 const store = createStore({
   state() {
@@ -57,11 +57,11 @@ const store = createStore({
 })
 
 // setCurrentPage(0)
-loadFonts()
+// loadFonts()
 
 createApp(App)
   .use(router)
   .use(store)
-  .use(vuetify)
+  // .use(vuetify)
   .use(VueAxios, axios)
   .mount('#app')

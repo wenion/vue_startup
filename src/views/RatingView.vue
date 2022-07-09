@@ -1,112 +1,84 @@
 <template>
-  <div v-if="awesome">
-    <v-window
-      v-model="window"
-      show-arrows
-    >
-      <v-window-item
-        v-for="n in feedbacks"
-        :key="n.id"
-      >
-      <v-card
-        class="mx-auto"
-        max-width="800"
-        style= "margin-top: 5%;"
-      >
-        <v-card-title class="text-h6 font-weight-regular justify-space-between">
-        <span>Hi, {{user.username}}</span>
-        </v-card-title>
-        <v-divider></v-divider>
+  <div v-if="awesome == 1">
+  <main>
+    <div class="container py-4">
+      <header class="pb-3 mb-4 border-bottom">
+        <a class="d-flex align-items-center text-dark text-decoration-none">
+          <span class="fs-4">You have been allocated to evaluate the quality of {{feedbacks.length}} feedback samples.</span>
+        </a>
+      <div class="progress">
+        <div class="progress-bar" id="progress" role="progressbar" style="width: 0%;" :aria-valuenow="cur_id" :aria-valuemin="1" :aria-valuemax="feedbacks.length"></div>
+      </div>
+      </header>
 
-        <v-card-title class="text-h6 font-weight-regular justify-space-between">
-          <!-- <h3>Title {{n.id}}</h3> -->
-          <p>[{{n.id}}/{{feedbacks.length}}] {{n.assign_name}}</p>
+      <div v-if="finish == 0">
+        <div class="container-fluid py-3">
+          <h5 class="lead">The displayed feedback is about the following assignment:</h5>
+          <h5 class="display-10"><b>{{feedbacks[cur_id].assign_name}}</b></h5>
+        </div>
+
+      <div class="p-3 mb-3 bg-light rounded-3">
+        <p class="p-3">{{feedbacks[cur_id].commenttext}}</p>
+      </div>
+
+      <ul class="list-group p-3 bg-light rounded-3" v-for="question in questions" :key="question.id">
+        <li class="list-group-item">
+          <p>{{question.content}}</p>
           
-          <!-- <h3>Title {{$route.params.id}}</h3> -->
-        </v-card-title>
+          <!-- <div class="d-flex align-items-center text-dark text-decoration-none"> -->
+            <span class="p-3 mb-3" v-for="star_idx in [1,2,3,4,5]" 
+              @mouseover="stars_over(star_idx, question.id)"
+              @mouseout="stars_out(star_idx, question.id)"
+              @click="set_stars(star_idx, question.id)" >
+              <i v-if="star_idx <= star_display[question.id-1]" class="bi bi-star-fill"></i>
+              <i v-if="star_idx > star_display[question.id-1]" class="bi bi-star"></i>
+            </span>
+          <!-- </div> -->
+        </li>
+      </ul>
 
-        <v-textarea
-          name="content"
-          auto-grow
-          rows="10"
-          :value="n.commenttext"
-          style="margin-left: 5%; margin-right: 5%"
-        ></v-textarea>
+      <div class="text-end p-3">
+        <button class="btn btn-primary" type="button" @click="submit">Submit</button>
+      </div>
 
-        <v-list>
-          <v-list-item
-            v-for="question in questions"
-            :key="question.id"
-          >
-            <v-col
-              cols="12"
-              md="10"
-              style="margin: auto;"
-            >
-              <v-list-item-header>
-                <!-- <v-list-item-title v-text="question.content"></v-list-item-title> -->
-                <p>{{question.content}}</p><br/>
-                <p v-if="n.score[question.id-1]">Your selection is <b>{{n.score[question.id-1]}}</b></p>
-                <p v-else>You haven't rate</p>
-                <!-- <v-list-item-subtitle>
-                  x
-                </v-list-item-subtitle> -->
-              </v-list-item-header>
-                
-              <div class="d-flex flex-column align-center justify-center">
-                <v-rating
-                  v-model="n.score[question.id-1]"
-                  class="ma-2"
-                  empty-icon="mdi-circle-outline"
-                  full-icon="mdi-circle"
-                  length = 5
-                  :item-labels="['1', '2', '3', '4', '5']"
-                  item-label-position="bottom"
-                ></v-rating>
-              </div>
-            </v-col>
-          </v-list-item>
-        </v-list>
+      </div>
+      <div v-else>
+        <div class="container-fluid py-3">
+          <h5 class="display-10">You have finished all samples, Thank you!</h5>
+        </div>
+      </div>
 
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            text
-            @click="submit"
-            size="large"
-          >
-            {{buttonText}}
-          </v-btn>
-          
-        </v-card-actions>
-      </v-card>
-    </v-window-item>
-  </v-window>
+    </div>
+  </main>
   </div>
-  <div v-else>
+  <div v-if="awesome == 2">
+    <main>
+      <div class="container py-4">
+        <h2 class="container-fluid py-3">You have finished all samples, Thank you!</h2>
+      </div>
+    </main>
+  </div>
+  <div v-if="awesome == 0">
     <h2>Loding...</h2>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch, watchEffect } from 'vue'
+import { is_nullish } from '../../node_modules2/terser/lib/compress/inference';
 
-const todoId = ref(1)
 
-const step = ref(3)
+const star_display = ref([])
+const cur_id = ref(0)
 
-const window = ref(0)
 
-// const id = $route.params.id;
-
-const awesome = ref(false)
+const awesome = ref(0)
 
 // const buttonText = ref('Next')
 
 const feedbacks = ref(null)
 const questions = ref(null)
-
+const finish = ref(0)
 const lastQuestion = ref(false)
 
 import { useStore } from 'vuex'
@@ -116,38 +88,10 @@ const store = useStore()
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 
-// console.log("router", router.currentRoute._value.params.id)
-
-// console.log("router 2", router)
-
-
-
-const router_id = computed(() => {
-  return router.currentRoute._value.params.id
-})
 
 const token = computed(() => {
   return store.getters.getToken
 })
-
-const user = computed(() => {
-  return store.getters.getUser
-})
-
-const buttonText = computed(() => {
-  if (window.value == feedbacks.value.length - 1)
-  {
-    return "Sumbit"
-  }
-  else
-  {
-    return "Next"
-  }
-})
-
-// const p = computed(() => {
-//   return store.getters.getP
-// })
 
 
 
@@ -156,7 +100,6 @@ axios.defaults.baseURL = 'http://34.125.129.147:5000'
 
 onMounted(() => {
 
-  console.log("asios")
   axios.get('/get_feedback/0', {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -166,15 +109,31 @@ onMounted(() => {
   }).then(function({data}) {
     feedbacks.value = data.feedback
 
-    // console.log("feedbacks>>",feedbacks.value.length)
+    console.log("feedbacks>>",feedbacks.value.length)
     // let i = 0
     // for (; i< feedbacks.value.length; i++)
     // {
     //   feedbacks[i].push()
     // }
     questions.value = data.question
-    console.log("feedbacks", feedbacks.value, questions.value);
-    awesome.value = true
+
+    for (let i = 0; i < questions.value.length; i++)
+    {
+      star_display.value.push(null)
+    }
+
+    // console.log("feedbacks", feedbacks.value[0].score);
+    console.log("feedbacks22", star_display.value);
+
+    if (feedbacks.value.length == 0)
+    {
+      awesome.value = 2
+    }
+    else
+    {
+      awesome.value = 1
+    }
+    
   }).catch(function (error) {
     router.push('/login')
     console.log("error", error);
@@ -183,24 +142,30 @@ onMounted(() => {
 
 })
 
+function stars_out(star_idx, id)
+{
+  star_display.value[id -1] = feedbacks.value[cur_id.value].score[id-1]
+}
 
-
-
+function stars_over(star_idx, id)
+{
+  // console.log(">>>>",id)
+  // console.log(star_idx, id, feedbacks.value[cur_id.value].score[id-1])
+  
+  star_display.value[id - 1] = star_idx
+  // feedbacks.value[cur_id.value].score[id-1] = 
+  // feedbacks[cur_id].score[id-1].value = star_idx
+}
+function set_stars(star_idx, id)
+{
+  // console.log(star_idx)
+  feedbacks.value[cur_id.value].score[id-1] = star_idx
+  star_display.value[id-1] = star_idx
+}
 
 
 function submit_feedback()
 {
-  // console.log("token", token)
-  // const form = new FormData();
-  // form.append("user_id", feedbacks);
-  // form.append("feedback_id", feedbackItem.feedback_id);
-
-  // for (let i = 0; i < feedbackItem.questions.length; i++)
-  // {
-  //   form.append("question_" + i, feedbackItem.questions[i].rating);
-  //   console.log("question" + i, feedbackItem.questions[i].rating)
-  // }
-
   const json = JSON.stringify(feedbacks.value);
   console.log("form", json)
 
@@ -223,45 +188,60 @@ function submit_feedback()
 
 function submit()
 {
-  let page = (window.value+1) % feedbacks.value.length
-  if (page != 0)
+  console.log("submit", feedbacks.value[cur_id.value].score)
+  console.log("feedbacks.value.length", feedbacks.value.length)
+  console.log("cur_id", cur_id.value)
+
+  const json = JSON.stringify(feedbacks.value[cur_id.value]);
+  console.log("form", json)
+
+  for (let i = 0; i < questions.value.length; i++)
   {
-    // next
-    window.value = page
-    return
+    if (feedbacks.value[cur_id.value].score[i] == 0)
+    {
+      alert(`Question ${i + 1} has no score`)
+      return;
+    }
+  }
+
+  axios.post('/submit', json, {
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'x-access-token' : token.value
+    }
+  }).then(function({data}) {
+    console.log("data", data)
+    for (let i = 0; i < questions.value.length; i++)
+    {
+      star_display.value[i] = 0
+    }
+
+  var elem = document.getElementById("progress")
+
+  if (cur_id.value == feedbacks.value.length - 1)
+  {
+    cur_id.value = feedbacks.value.length - 1
+    elem.style.width = '100%';
+    finish.value = 1
+    router.push('/user')
   }
   else
   {
-    // submit
-    for (let i = 0; i < feedbacks.value.length; i++)
-    {
-      for (let j = 0; j < feedbacks.value[i].score.length; j++)
-      {
-        // console.log(">>>>", s, feedbacks.value[i].score[s])
-        if (feedbacks.value[i].score[j] === 0)
-        {
-          alert(`Text ${i+1}/${feedbacks.value.length} Question ${j + 1} has no score`)
-          return
-        }
-      }
-    }
-
-    console.log("submiting", feedbacks.value)
-    submit_feedback()
-    router.push('/thank')
+    cur_id.value++
+    elem.style.width = ((cur_id.value) / feedbacks.value.length)*100 + '%';
+    
   }
+
+
+
+  }).catch(function (error) {
+    console.log("errorjson", error.toJSON());
+    alert(`submit error`)
+    
+  });
+
+  
 }
-
-
-// const currentTitle = computed(() => {
-//   switch (step.value) {
-//           case 1: return 'Sign-up'
-//           case 2: return 'Create a password'
-//           default: return 'Account created'
-//         }
-// })
-
-
 
 </script>
 

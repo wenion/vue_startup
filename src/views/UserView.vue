@@ -1,5 +1,19 @@
 <template>
-  <v-card
+  <main class="container">
+    <div class="bg-light p-5 rounded mt-3">
+      <h1>Hi, {{user.username}}</h1>
+      <p class="lead">Homepage</p>
+      <a v-for="n in items" :key="n.id"
+        :class="n.class"
+        @click="n.clickAction"
+        style="margin: 4px 4px; min-width: 200px;"
+        role="button" >
+          {{n.name}} &raquo;
+        </a>
+    </div>
+  </main>
+
+  <!-- <v-card
     class="mx-auto"
     max-width="500px"
     style= "margin-top: 20%;"
@@ -22,33 +36,36 @@
     </v-btn>
     </v-list>
 
-  </v-card>
+  </v-card> -->
 
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const items = ref([
+const ori_items = ref([
         {
-          name: 'Upload feedback data',
+          name: 'Upload Data',
           id: 1,
           clickAction : downloadData,
           color : "grey",
+          class : 'btn btn-lg btn-primary',
           needAuth : true,
         },
         {
-          name: 'Download feedback data',
+          name: 'Download Data',
           id: 2,
           clickAction : downloadData,
           color : "grey",
+          class : 'btn btn-lg btn-primary',
           needAuth : true,
         },
         {
-          name: 'Start rating',
+          name: 'Start',
           id: 3,
           clickAction : startRanking,
           color : "success",
+          class : 'btn btn-lg btn-success',
           needAuth : false,
         },
         {
@@ -56,6 +73,7 @@ const items = ref([
           id: 3,
           clickAction : logout,
           color : "error",
+          class : 'btn btn-lg btn-danger',
           needAuth : false,
         },
       ])
@@ -81,6 +99,43 @@ const token = computed(() => {
 
 const user = computed(() => {
   return store.getters.getUser
+})
+
+const items = computed(() => {
+  let e = [
+    {
+      name: 'Upload Data',
+      id: 1,
+      clickAction : downloadData,
+      class : 'btn btn-lg btn-primary',
+    },
+    {
+      name: 'Download Data',
+      id: 2,
+      clickAction : downloadData,
+      class : 'btn btn-lg btn-primary',
+    },
+    {
+      name: 'Start',
+      id: 3,
+      clickAction : startRanking,
+      class : 'btn btn-lg btn-success',
+    },
+    {
+      name: 'Logout',
+      id: 3,
+      clickAction : logout,
+      class : 'btn btn-lg btn-danger',
+    },
+  ]
+
+  if (store.getters.getUser.auth != 1) // highest authority
+  {
+    e.shift();
+    e.shift();
+  }
+  
+  return e
 })
 
 // const authShow = computed((s) => {
@@ -242,6 +297,20 @@ function getUser()
 </script>
 
 <style>
+
+      /* .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      } */
 /* .user {
   border-radius: 5px;
   background-color: #f2f2f2;

@@ -1,8 +1,35 @@
 <template>
-  <v-card
+<div class="text-center">
+<main class="form-signin w-100 m-auto">
+  <form>
+    <!-- <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+    <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+
+    <div class="form-floating">
+      <input type="email" class="form-control" id="floatingInput" placeholder="Username" v-model="username">
+      <label for="floatingInput">Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
+      <label for="floatingPassword">Password</label>
+    </div>
+    </form>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+      <!-- https://codepen.io/AllThingsSmitty/pen/pOoeyz -->
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit" @click="login">Sign in</button>
+    <!-- <p class="mt-5 mb-3 text-muted">&copy; 2017–2022</p> -->
+  
+</main>
+</div>
+  <!-- <v-card
       class="mx-auto"
       max-width="500px"
-      style= "margin-top: 20%;"
+      style= "margin-top: 15%;"
     >
     <v-card-title class="text-h6 font-weight-regular justify-space-between">
       <span>Sign in</span>
@@ -38,7 +65,7 @@
       Login
     </v-btn>
   </v-card-actions>
-</v-card>
+</v-card> -->
 </template>
 
 
@@ -105,6 +132,7 @@ import axios from 'axios'
 // });
 
 function login() {
+  console.log('login')
   console.log(username.value)
   console.log(password.value)
   const form = new FormData();
@@ -112,6 +140,7 @@ function login() {
   form.append("password", password.value);
   // console.log(form)
   // axios.post('http://34.125.129.147:5000/login', form, {
+
   axios.post('http://34.125.129.147:5000/login', form, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -132,6 +161,7 @@ function login() {
       alert(`Error Username or Password`)
     }
   });
+
 }
 
 const name = ref('Vue.js')
@@ -182,4 +212,33 @@ function greet(event) {
   background-color: #f2f2f2;
   padding: 20px;
 } */
+.text-center {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f5f5f5;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 </style>
